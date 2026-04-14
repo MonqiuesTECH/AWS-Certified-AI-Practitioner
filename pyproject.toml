@@ -1,50 +1,28 @@
 [tool.poetry]
 name = "aif-c01"
 version = "0.1.0"
-description = "AWS Certified AI Practitioner (AIF-C01) exam preparation"
-authors = ["Jason Walsh <j@wal.sh>"]
-license = "MIT"
-readme = "README.org"
+description = "AWS Certified AI Practitioner (AIF-C01) Exam Preparation"
+authors = ["Jason Walsh"]
+readme = "README.md"
+package-mode = false  # This prevents the deployment crash
 
 [tool.poetry.dependencies]
-python = "^3.11"
-click = "^8.1.7"
-anthropic = "^0.34.1"
-boto3 = "^1.35.11"
-pydantic = "^2.8.2"
-openai = "^1.44.1"
-chardet = "^5.2.0"
-orgparse = "^0.4.20231004"
-files-to-prompt = "^0.4"
-
+python = "^3.9"
+boto3 = ">=1.42.19"
+botocore = ">=1.42.19"
+anthropic = ">=0.34.2"
+openai = ">=1.109.1"
+pydantic = ">=2.12.5"
+huggingface-hub = ">=1.2.3"
+typer-slim = ">=0.21.0"
+tqdm = ">=4.67.1"
+pyyaml = ">=6.0.3"
+streamlit = "*" # Required for Streamlit Cloud deployment
 
 [tool.poetry.group.dev.dependencies]
-flake8 = "^7.1.1"
-black = "^26.3.1"
+black = ">=26.3.1"
+flake8 = ">=7.3.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.black]
-line-length = 88
-target-version = ['py311']
-include = '\.pyw?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
-
-[tool.flake8]
-max-line-length = 88
-exclude = [".git", "__pycache__", "build", "dist"]
-extend-ignore = ["E203"]

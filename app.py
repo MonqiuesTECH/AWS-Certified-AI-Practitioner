@@ -11,20 +11,34 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# --- SESSION STATE INITIALIZATION ---
+if 'current_q' not in st.session_state:
+    st.session_state.current_q = 0
+if 'selected_answer' not in st.session_state:
+    st.session_state.selected_answer = None
+
+def next_question():
+    st.session_state.current_q += 1
+    st.session_state.selected_answer = None
+
+def reset_quiz():
+    st.session_state.current_q = 0
+    st.session_state.selected_answer = None
+
 # --- SIDEBAR & ENVIRONMENT SETUP ---
 with st.sidebar:
     st.title("AWS AIF-C01 Hub")
-    st.markdown("Accelerated 8-Week Exam Prep")
+    st.markdown("Accelerated Exam Prep")
     
     st.subheader("Environment")
     env_mode = st.radio("AWS Target", ["LocalStack (Local)", "AWS Cloud (Live)"])
     
     if env_mode == "LocalStack (Local)":
         endpoint_url = "http://localhost:4566"
-        st.info("Operating in LocalStack mode. Ensure Docker is running.")
+        st.info("Operating in LocalStack mode.")
     else:
         endpoint_url = None
-        st.warning("Operating in Live AWS mode. Watch your billing!")
+        st.warning("Operating in Live AWS mode. Watch billing!")
 
     st.divider()
     page = st.radio("Exam Domains", [
@@ -35,83 +49,93 @@ with st.sidebar:
 
 # --- HELPER FUNCTIONS ---
 def get_bedrock_client():
-    """Initializes boto3 client based on selected environment."""
     if env_mode == "LocalStack (Local)":
         return boto3.client('bedrock-runtime', region_name='us-east-1', 
                             endpoint_url=endpoint_url, aws_access_key_id="test", aws_secret_access_key="test")
     else:
         return boto3.client('bedrock-runtime', region_name='us-east-1')
 
+# --- QUIZ DATA ---
+quiz_data = [
+    {
+        "question": "Which service is best suited for extracting text, handwriting, and data from scanned documents?",
+        "options": ["Amazon Comprehend", "Amazon Textract", "Amazon Lex", "Amazon Kendra"],
+        "answer": "Amazon Textract",
+        "explanations": {
+            "Amazon Textract": "**Correct!** Think of Textract as an automated data entry worker. It reads forms, checkboxes, and tables from raw images and turns them into usable data.",
+            "Amazon Comprehend": "**Incorrect.** Comprehend is a mood-reader. It reads plain text and figures out sentiment or key phrases, but cannot extract text from an image.",
+            "Amazon Lex": "**Incorrect.** Lex is the brain for building conversational chatbots, not parsing documents.",
+            "Amazon Kendra": "**Incorrect.** Kendra is an enterprise search engine to find answers across company documents, not the OCR tool to extract raw text from an image."
+        }
+    },
+    {
+        "question": "What is the primary use case for Amazon Macie in an ML pipeline?",
+        "options": ["Training foundation models", "Orchestrating container deployments", "Discovering and protecting PII in S3", "Translating text"],
+        "answer": "Discovering and protecting PII in S3",
+        "explanations": {
+            "Discovering and protecting PII in S3": "**Correct!** Macie is an automated security guard that scans your S3 buckets to ensure no sensitive customer data (like SSNs) is accidentally used to train your AI models.",
+            "Training foundation models": "**Incorrect.** Model training happens in Amazon SageMaker or Bedrock. Macie is strictly a security service.",
+            "Orchestrating container deployments": "**Incorrect.** Container management is handled by ECS or EKS.",
+            "Translating text": "**Incorrect.** Text translation is handled by Amazon Translate."
+        }
+    }
+]
+
 # --- PAGE 1: QUIZ ENGINE (DOMAIN 1) ---
 if page == "1. ML & GenAI Fundamentals":
     st.header("🧠 Foundation Models & AWS Services")
-    st.write("Test your knowledge on when to use which AWS AI service.")
     
-    st.markdown("### Question 1")
-    q1 = st.radio(
-        "Which service is best suited for extracting text, handwriting, and data from scanned documents?",
-        ["Amazon Comprehend", "Amazon Textract", "Amazon Lex", "Amazon Kendra"],
-        index=None
-    )
-    
-    if q1 == "Amazon Textract":
-        st.success("""**Correct!** **The Simple Explanation:** Think of Textract as a super-smart, automated data entry worker. If you hand it a picture of a form, it doesn't just see a picture; it actually reads the words, recognizes where the checkboxes are, and understands how a table is laid out.
-        **Real-World Example:** A hospital receives thousands of paper patient intake forms. Instead of paying someone to type all that information into a database by hand, they scan the paper forms, run the images through Amazon Textract, and it automatically pulls the names, dates, and medical history into their computer system in seconds.""")
-    elif q1 == "Amazon Comprehend":
-        st.error("""**Incorrect.** **The Simple Explanation:** Comprehend is like a mood-reader or a summarizer. It doesn't look at pictures or scans; it reads raw text and tries to figure out what the text *means* (Is it positive? Negative? What are the key phrases?).
-        **Real-World Example:** You would use Comprehend to read thousands of Twitter comments to figure out if people are generally happy or angry about a new product you just launched.""")
-    elif q1 == "Amazon Lex":
-        st.error("""**Incorrect.** **The Simple Explanation:** Lex is the brain you use to build chatbots or automated phone menus. It listens to voice or reads chat text to figure out what a person wants to do.
-        **Real-World Example:** When you call an airline and a robot says, "Tell me what you need," and you say, "I want to book a flight," Amazon Lex is the service figuring out your intent.""")
-    elif q1 == "Amazon Kendra":
-        st.error("""**Incorrect.** **The Simple Explanation:** Kendra is like a private Google search engine for a company's internal files. It searches for answers, but it doesn't extract data from scanned images.
-        **Real-World Example:** An employee types, "What is the holiday policy?" into their company portal, and Kendra searches through thousands of internal HR PDFs to find the exact paragraph with the answer.""")
-
-    st.divider()
-    
-    st.markdown("### Question 2")
-    q2 = st.radio(
-        "What is the primary use case for Amazon Macie in an ML pipeline?",
-        ["Training foundation models", "Orchestrating container deployments", "Discovering and protecting PII in S3", "Translating text"],
-        index=None
-    )
-    
-    if q2 == "Discovering and protecting PII in S3":
-        st.success("""**Correct!** **The Simple Explanation:** Macie is like an automated security guard that constantly digs through your digital filing cabinets (Amazon S3 buckets) looking for sensitive secrets you accidentally left lying around, like credit card numbers or Social Security numbers.
-        **Real-World Example:** Before you feed 10 years of customer support emails into a machine learning model to train it, Macie scans the emails to ensure no customers accidentally included their bank account numbers, preventing your AI from accidentally learning and repeating that secret data.""")
-    elif q2 == "Training foundation models":
-        st.error("""**Incorrect.** **The Simple Explanation:** Building and training the actual AI models is done in the "factories" of AWS, which are Amazon SageMaker or Amazon Bedrock. Macie is strictly the security guard protecting the data, not the builder.
-        **Real-World Example:** You use SageMaker to build an AI that predicts house prices. You use Macie to make sure the data you feed it doesn't have people's private financial records.""")
-    elif q2 == "Orchestrating container deployments":
-        st.error("""**Incorrect.** **The Simple Explanation:** Container orchestration (like Amazon ECS or EKS) is like the shipping department. It makes sure the software packages are delivered and running smoothly on different servers. Macie does not manage how software runs; it just reads data.
-        **Real-World Example:** Running a massive website that needs to scale up instantly when a million people log on during a Super Bowl ad.""")
-    elif q2 == "Translating text":
-        st.error("""**Incorrect.** **The Simple Explanation:** Changing text from one language to another is handled by Amazon Translate. Macie only looks for security risks in the language it already is in.
-        **Real-World Example:** Automatically changing an English instruction manual into Spanish for a global launch.""")
+    if st.session_state.current_q < len(quiz_data):
+        q = quiz_data[st.session_state.current_q]
+        st.markdown(f"### Question {st.session_state.current_q + 1} of {len(quiz_data)}")
+        st.write(q["question"])
+        
+        # User makes a selection
+        choice = st.radio("Select an answer:", q["options"], index=None, key=f"q_{st.session_state.current_q}")
+        
+        if choice:
+            st.session_state.selected_answer = choice
+            
+            # Show customized feedback
+            if choice == q["answer"]:
+                st.success(q["explanations"][choice])
+            else:
+                st.error(q["explanations"][choice])
+            
+            # Show Next Button
+            st.button("Next Question ➡️", on_click=next_question, type="primary")
+            
+    else:
+        st.success("🎉 You've completed this domain's practice questions!")
+        st.button("Restart Quiz", on_click=reset_quiz)
 
 # --- PAGE 2: BEDROCK PLAYGROUND (DOMAINS 2 & 3) ---
 elif page == "2. Bedrock API Playground":
     st.header("⚡ Amazon Bedrock API Tester")
-    st.write("Test model invocations and token generation. (Note: LocalStack GenAI support is limited; use Live AWS for full model access).")
     
+    with st.expander("📖 Guided Lab Instructions (Click to open)", expanded=True):
+        st.markdown("""
+        **Exam Focus: Model Invocations & Token Parameters**
+        To master this section for the exam, complete the following scenarios:
+        1. **Test Latency vs. Output:** Select `anthropic.claude-v2`, set max tokens to 500, and ask it to "Write a 3 paragraph essay on cloud computing." Watch how long it takes.
+        2. **Test Hallucination Mitigation (Temperature):** Set the Temperature to `0.0`. Ask it a factual question ("What is the capital of France?"). A temperature of 0 ensures deterministic, highly focused answers. 
+        3. **Test Creative Variance:** Change the Temperature to `1.0` and ask it to "Write a poem about a server crashing." A temperature of 1 introduces randomness and creativity.
+        """)
+
     col1, col2 = st.columns([1, 2])
-    
     with col1:
         model_id = st.selectbox("Select Foundation Model", [
             "anthropic.claude-v2",
             "anthropic.claude-3-sonnet-20240229-v1:0",
-            "meta.llama3-8b-instruct-v1:0",
-            "amazon.titan-text-express-v1"
+            "meta.llama3-8b-instruct-v1:0"
         ])
         max_tokens = st.slider("Max Tokens", 50, 1000, 200)
         temperature = st.slider("Temperature", 0.0, 1.0, 0.7)
         
     with col2:
         prompt_text = st.text_area("Enter your prompt:", "Explain the difference between RAG and Fine-Tuning in 3 sentences.")
-        
         if st.button("Invoke Model", type="primary"):
             client = get_bedrock_client()
-            
             if "claude" in model_id:
                 body = json.dumps({
                     "prompt": f"\n\nHuman:{prompt_text}\n\nAssistant:",
@@ -123,25 +147,26 @@ elif page == "2. Bedrock API Playground":
 
             try:
                 with st.spinner("Invoking model..."):
-                    response = client.invoke_model(
-                        modelId=model_id,
-                        contentType="application/json",
-                        accept="application/json",
-                        body=body
-                    )
+                    response = client.invoke_model(modelId=model_id, contentType="application/json", accept="application/json", body=body)
                     response_body = json.loads(response.get('body').read())
                     st.write(response_body.get('completion', response_body))
             except Exception as e:
                 st.error("API Call Failed. Ensure your AWS credentials are set or LocalStack is running.")
-                with st.expander("View Error Details"):
-                    st.code(str(e))
+                st.code(str(e))
 
 # --- PAGE 3: SECURITY SIMULATOR (DOMAINS 4 & 5) ---
 elif page == "3. Security & Governance":
     st.header("🛡️ Responsible AI & IAM Simulator")
-    st.write("Analyze IAM policies for Least Privilege violations.")
     
-    st.subheader("IAM Policy Analyzer")
+    with st.expander("📖 Guided Lab Instructions (Click to open)", expanded=True):
+        st.markdown("""
+        **Exam Focus: Principle of Least Privilege**
+        AWS heavily tests your ability to spot bad security policies. 
+        1. **Trigger the Alert:** Click "Analyze Policy" on the default JSON below. Notice how it flags the wildcard `s3:*`. This is an exam anti-pattern.
+        2. **Fix the Policy:** Edit the JSON text box. Change `"s3:*"` to `"s3:GetObject"`. Change the Resource from `"*"` to `"arn:aws:s3:::my-training-data-bucket/*"`. 
+        3. **Re-Test:** Click "Analyze Policy" again. It should now pass your security check. 
+        """)
+    
     sample_policy = """{
     "Version": "2012-10-17",
     "Statement": [
@@ -163,10 +188,4 @@ elif page == "3. Security & Governance":
         elif "Resource\": \"*\"" in policy_input:
             st.warning("⚠️ WARNING: Wildcard resource detected. Restrict actions to specific ARNs where possible.")
         else:
-            st.success("✅ Policy looks reasonably scoped.")
-
-    st.divider()
-    st.subheader("Bedrock Guardrails Checklist")
-    st.checkbox("Denied Topics configured (e.g., Hate speech, self-harm)")
-    st.checkbox("PII Redaction enabled (e.g., SSN, Credit Cards)")
-    st.checkbox("Word Filters applied (Profanity blocking)")
+            st.success("✅ Policy looks securely scoped for production ML workloads.")

@@ -37,7 +37,6 @@ with st.sidebar:
 def get_bedrock_client():
     """Initializes boto3 client based on selected environment."""
     if env_mode == "LocalStack (Local)":
-        # LocalStack requires dummy credentials
         return boto3.client('bedrock-runtime', region_name='us-east-1', 
                             endpoint_url=endpoint_url, aws_access_key_id="test", aws_secret_access_key="test")
     else:
@@ -48,27 +47,41 @@ if page == "1. ML & GenAI Fundamentals":
     st.header("🧠 Foundation Models & AWS Services")
     st.write("Test your knowledge on when to use which AWS AI service.")
     
+    st.markdown("### Question 1")
     q1 = st.radio(
-        "1. Which service is best suited for extracting text, handwriting, and data from scanned documents?",
+        "Which service is best suited for extracting text, handwriting, and data from scanned documents?",
         ["Amazon Comprehend", "Amazon Textract", "Amazon Lex", "Amazon Kendra"],
         index=None
     )
-    if q1:
-        if q1 == "Amazon Textract":
-            st.success("Correct! Textract uses OCR and ML to extract text and structured data.")
-        else:
-            st.error("Incorrect. Textract is the dedicated document parsing service.")
+    
+    # Detailed explanations for Q1
+    if q1 == "Amazon Textract":
+        st.success("**Correct!** Amazon Textract uses OCR and machine learning to extract text, handwriting, and structured data (like tables and forms) from scanned documents.")
+    elif q1 == "Amazon Comprehend":
+        st.error("**Incorrect.** Comprehend is an NLP service used to find insights and relationships in text (like sentiment analysis or entity extraction), but it cannot extract text from an image/scan.")
+    elif q1 == "Amazon Lex":
+        st.error("**Incorrect.** Lex is used for building conversational interfaces (chatbots) using voice and text. It does not parse document files.")
+    elif q1 == "Amazon Kendra":
+        st.error("**Incorrect.** Kendra is an intelligent enterprise search service. While it can search through documents, Textract is the specific service used for the raw extraction of the text itself.")
 
+    st.divider()
+    
+    st.markdown("### Question 2")
     q2 = st.radio(
-        "2. What is the primary use case for Amazon Macie in an ML pipeline?",
+        "What is the primary use case for Amazon Macie in an ML pipeline?",
         ["Training foundation models", "Orchestrating container deployments", "Discovering and protecting PII in S3", "Translating text"],
         index=None
     )
-    if q2:
-        if q2 == "Discovering and protecting PII in S3":
-            st.success("Correct! Macie is heavily tested on the exam for data governance.")
-        else:
-            st.error("Incorrect. Macie is a data security service.")
+    
+    # Detailed explanations for Q2
+    if q2 == "Discovering and protecting PII in S3":
+        st.success("**Correct!** Amazon Macie uses ML and pattern matching to discover and protect sensitive data (like Personally Identifiable Information) stored in Amazon S3 buckets before it accidentally gets used in a training job.")
+    elif q2 == "Training foundation models":
+        st.error("**Incorrect.** Amazon SageMaker or Bedrock (Custom Models) are used for training and fine-tuning models. Macie is strictly a data security and privacy service.")
+    elif q2 == "Orchestrating container deployments":
+        st.error("**Incorrect.** Amazon ECS or EKS are used for container orchestration. Macie does not manage infrastructure.")
+    elif q2 == "Translating text":
+        st.error("**Incorrect.** Amazon Translate handles text translation. Macie is designed to scan data lakes for security risks.")
 
 # --- PAGE 2: BEDROCK PLAYGROUND (DOMAINS 2 & 3) ---
 elif page == "2. Bedrock API Playground":
@@ -93,7 +106,6 @@ elif page == "2. Bedrock API Playground":
         if st.button("Invoke Model", type="primary"):
             client = get_bedrock_client()
             
-            # Constructing the payload based on Claude's specific format
             if "claude" in model_id:
                 body = json.dumps({
                     "prompt": f"\n\nHuman:{prompt_text}\n\nAssistant:",
@@ -101,11 +113,10 @@ elif page == "2. Bedrock API Playground":
                     "temperature": temperature
                 })
             else:
-                body = json.dumps({"inputText": prompt_text}) # Simplified fallback
+                body = json.dumps({"inputText": prompt_text})
 
             try:
                 with st.spinner("Invoking model..."):
-                    # This will fail gracefully if the environment isn't set up yet
                     response = client.invoke_model(
                         modelId=model_id,
                         contentType="application/json",

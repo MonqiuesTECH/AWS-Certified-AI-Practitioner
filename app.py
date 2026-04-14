@@ -54,15 +54,18 @@ if page == "1. ML & GenAI Fundamentals":
         index=None
     )
     
-    # Detailed explanations for Q1
     if q1 == "Amazon Textract":
-        st.success("**Correct!** Amazon Textract uses OCR and machine learning to extract text, handwriting, and structured data (like tables and forms) from scanned documents.")
+        st.success("""**Correct!** **The Simple Explanation:** Think of Textract as a super-smart, automated data entry worker. If you hand it a picture of a form, it doesn't just see a picture; it actually reads the words, recognizes where the checkboxes are, and understands how a table is laid out.
+        **Real-World Example:** A hospital receives thousands of paper patient intake forms. Instead of paying someone to type all that information into a database by hand, they scan the paper forms, run the images through Amazon Textract, and it automatically pulls the names, dates, and medical history into their computer system in seconds.""")
     elif q1 == "Amazon Comprehend":
-        st.error("**Incorrect.** Comprehend is an NLP service used to find insights and relationships in text (like sentiment analysis or entity extraction), but it cannot extract text from an image/scan.")
+        st.error("""**Incorrect.** **The Simple Explanation:** Comprehend is like a mood-reader or a summarizer. It doesn't look at pictures or scans; it reads raw text and tries to figure out what the text *means* (Is it positive? Negative? What are the key phrases?).
+        **Real-World Example:** You would use Comprehend to read thousands of Twitter comments to figure out if people are generally happy or angry about a new product you just launched.""")
     elif q1 == "Amazon Lex":
-        st.error("**Incorrect.** Lex is used for building conversational interfaces (chatbots) using voice and text. It does not parse document files.")
+        st.error("""**Incorrect.** **The Simple Explanation:** Lex is the brain you use to build chatbots or automated phone menus. It listens to voice or reads chat text to figure out what a person wants to do.
+        **Real-World Example:** When you call an airline and a robot says, "Tell me what you need," and you say, "I want to book a flight," Amazon Lex is the service figuring out your intent.""")
     elif q1 == "Amazon Kendra":
-        st.error("**Incorrect.** Kendra is an intelligent enterprise search service. While it can search through documents, Textract is the specific service used for the raw extraction of the text itself.")
+        st.error("""**Incorrect.** **The Simple Explanation:** Kendra is like a private Google search engine for a company's internal files. It searches for answers, but it doesn't extract data from scanned images.
+        **Real-World Example:** An employee types, "What is the holiday policy?" into their company portal, and Kendra searches through thousands of internal HR PDFs to find the exact paragraph with the answer.""")
 
     st.divider()
     
@@ -73,15 +76,18 @@ if page == "1. ML & GenAI Fundamentals":
         index=None
     )
     
-    # Detailed explanations for Q2
     if q2 == "Discovering and protecting PII in S3":
-        st.success("**Correct!** Amazon Macie uses ML and pattern matching to discover and protect sensitive data (like Personally Identifiable Information) stored in Amazon S3 buckets before it accidentally gets used in a training job.")
+        st.success("""**Correct!** **The Simple Explanation:** Macie is like an automated security guard that constantly digs through your digital filing cabinets (Amazon S3 buckets) looking for sensitive secrets you accidentally left lying around, like credit card numbers or Social Security numbers.
+        **Real-World Example:** Before you feed 10 years of customer support emails into a machine learning model to train it, Macie scans the emails to ensure no customers accidentally included their bank account numbers, preventing your AI from accidentally learning and repeating that secret data.""")
     elif q2 == "Training foundation models":
-        st.error("**Incorrect.** Amazon SageMaker or Bedrock (Custom Models) are used for training and fine-tuning models. Macie is strictly a data security and privacy service.")
+        st.error("""**Incorrect.** **The Simple Explanation:** Building and training the actual AI models is done in the "factories" of AWS, which are Amazon SageMaker or Amazon Bedrock. Macie is strictly the security guard protecting the data, not the builder.
+        **Real-World Example:** You use SageMaker to build an AI that predicts house prices. You use Macie to make sure the data you feed it doesn't have people's private financial records.""")
     elif q2 == "Orchestrating container deployments":
-        st.error("**Incorrect.** Amazon ECS or EKS are used for container orchestration. Macie does not manage infrastructure.")
+        st.error("""**Incorrect.** **The Simple Explanation:** Container orchestration (like Amazon ECS or EKS) is like the shipping department. It makes sure the software packages are delivered and running smoothly on different servers. Macie does not manage how software runs; it just reads data.
+        **Real-World Example:** Running a massive website that needs to scale up instantly when a million people log on during a Super Bowl ad.""")
     elif q2 == "Translating text":
-        st.error("**Incorrect.** Amazon Translate handles text translation. Macie is designed to scan data lakes for security risks.")
+        st.error("""**Incorrect.** **The Simple Explanation:** Changing text from one language to another is handled by Amazon Translate. Macie only looks for security risks in the language it already is in.
+        **Real-World Example:** Automatically changing an English instruction manual into Spanish for a global launch.""")
 
 # --- PAGE 2: BEDROCK PLAYGROUND (DOMAINS 2 & 3) ---
 elif page == "2. Bedrock API Playground":

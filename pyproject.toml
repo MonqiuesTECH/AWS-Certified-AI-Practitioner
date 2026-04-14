@@ -4,10 +4,10 @@ version = "0.1.0"
 description = "AWS Certified AI Practitioner (AIF-C01) Exam Preparation"
 authors = ["Jason Walsh"]
 readme = "README.md"
-package-mode = false  # This prevents the deployment crash
+package-mode = false 
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 boto3 = ">=1.42.19"
 botocore = ">=1.42.19"
 anthropic = ">=0.34.2"
@@ -17,7 +17,7 @@ huggingface-hub = ">=1.2.3"
 typer-slim = ">=0.21.0"
 tqdm = ">=4.67.1"
 pyyaml = ">=6.0.3"
-streamlit = "*" # Required for Streamlit Cloud deployment
+streamlit = "*" 
 
 [tool.poetry.group.dev.dependencies]
 black = ">=26.3.1"

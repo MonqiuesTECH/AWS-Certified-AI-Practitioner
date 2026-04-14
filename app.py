@@ -62,10 +62,44 @@ quiz_data = [
         "options": ["Amazon Comprehend", "Amazon Textract", "Amazon Lex", "Amazon Kendra"],
         "answer": "Amazon Textract",
         "explanations": {
-            "Amazon Textract": "**Correct!** Think of Textract as an automated data entry worker. It reads forms, checkboxes, and tables from raw images and turns them into usable data.",
-            "Amazon Comprehend": "**Incorrect.** Comprehend is a mood-reader. It reads plain text and figures out sentiment or key phrases, but cannot extract text from an image.",
-            "Amazon Lex": "**Incorrect.** Lex is the brain for building conversational chatbots, not parsing documents.",
-            "Amazon Kendra": "**Incorrect.** Kendra is an enterprise search engine to find answers across company documents, not the OCR tool to extract raw text from an image."
+            "Amazon Textract": """✅ **Correct! The answer is Amazon Textract.**
+            
+🤖 **System AI Analysis:**
+Great job choosing the correct answer! Let me break this down so you fully understand the mechanics behind it.
+
+Imagine you have a stack of paper tax forms and you need to type all that data into a spreadsheet. You could hire a data entry clerk to look at the papers, find the boxes, and type the numbers. Amazon Textract is that highly trained clerk, but digitized. It doesn't just take a "picture" of the document; it actually understands the structure.
+
+Here is how it works in a real-world pipeline:
+1. You upload a scanned PDF or image to an Amazon S3 bucket.
+2. Your system triggers Amazon Textract to analyze the document.
+3. Textract uses Optical Character Recognition (OCR) and Machine Learning to read the text.
+4. It identifies relationships—for example, it knows that "First Name" is linked to "John" right next to it, and it keeps table rows and columns intact.
+5. It outputs structured JSON data that you can instantly save to a database like DynamoDB.
+
+By using Textract, you eliminate manual data entry and capture structured data instantly. Perfect choice!""",
+
+            "Amazon Comprehend": """❌ **Incorrect. The answer is not Amazon Comprehend.**
+
+🤖 **System AI Analysis:**
+Let's clarify what Comprehend does so you don't miss this on the exam. 
+
+Comprehend is a Natural Language Processing (NLP) service. It is like a mood-reader or a summarizer. It cannot look at pictures, scans, or PDFs to extract words. It requires you to hand it plain text, and then it figures out what that text *means* (e.g., Is this text positive or negative? Does it mention a city or a person's name?). 
+
+If you want to extract text from a scanned document, you must use **Amazon Textract** first, and then you could pass that extracted text to Comprehend for analysis.""",
+
+            "Amazon Lex": """❌ **Incorrect. The answer is not Amazon Lex.**
+
+🤖 **System AI Analysis:**
+Let's look at why Lex isn't the right fit here.
+
+Lex is the artificial intelligence brain behind conversational interfaces. Think of it as the engine you use to build chatbots or automated customer service phone menus. It listens to voice audio or reads chat text to figure out a user's intent. It has absolutely no ability to read scanned documents, handwriting, or forms. For document extraction, **Amazon Textract** is the required service.""",
+
+            "Amazon Kendra": """❌ **Incorrect. The answer is not Amazon Kendra.**
+
+🤖 **System AI Analysis:**
+This is a very common distractor on the exam! Let's clear it up.
+
+Amazon Kendra is a highly intelligent, enterprise search engine. It is like a private Google for your company's internal files. While Kendra *can* search through documents to find answers to questions, it is not the service you use to extract raw text, tables, or handwriting into structured data for an ML pipeline. To do the actual raw extraction from an image or PDF, you need **Amazon Textract**."""
         }
     },
     {
@@ -73,10 +107,42 @@ quiz_data = [
         "options": ["Training foundation models", "Orchestrating container deployments", "Discovering and protecting PII in S3", "Translating text"],
         "answer": "Discovering and protecting PII in S3",
         "explanations": {
-            "Discovering and protecting PII in S3": "**Correct!** Macie is an automated security guard that scans your S3 buckets to ensure no sensitive customer data (like SSNs) is accidentally used to train your AI models.",
-            "Training foundation models": "**Incorrect.** Model training happens in Amazon SageMaker or Bedrock. Macie is strictly a security service.",
-            "Orchestrating container deployments": "**Incorrect.** Container management is handled by ECS or EKS.",
-            "Translating text": "**Incorrect.** Text translation is handled by Amazon Translate."
+            "Discovering and protecting PII in S3": """✅ **Correct! The answer is Discovering and protecting PII in S3.**
+
+🤖 **System AI Analysis:**
+Spot on! Macie is a crucial governance and security tool. Let's look at why it is tested so heavily on the exam.
+
+Imagine you are running a massive digital library where millions of files are dropped off daily. You need to make sure no one accidentally left their diary or credit card in those files before you let an AI model read them. Amazon Macie is your automated security guard that constantly opens the books, scans for secrets, and alerts you if it finds anything sensitive.
+
+Here is how it works in an ML workflow:
+1. Your company dumps raw customer data (emails, logs, support tickets) into an Amazon S3 data lake.
+2. Before SageMaker can use this data to train a foundation model, Amazon Macie is enabled on the bucket.
+3. Macie uses machine learning and pattern matching to scan the files.
+4. It specifically looks for Personally Identifiable Information (PII) like Social Security numbers, credit cards, or medical data.
+5. If it finds PII, it triggers an alert so you can redact or delete the data *before* the AI trains on it and potentially leaks it.
+
+Using Macie ensures you maintain compliance and Responsible AI practices!""",
+
+            "Training foundation models": """❌ **Incorrect. The answer is not Training foundation models.**
+
+🤖 **System AI Analysis:**
+Let's separate the security tools from the building tools. 
+
+Building and training the actual AI foundation models is done in the "factories" of AWS, which are **Amazon SageMaker** or **Amazon Bedrock**. Amazon Macie does not train or host models. It is strictly a data security and privacy service used to protect the data *before* it gets sent to those factories.""",
+
+            "Orchestrating container deployments": """❌ **Incorrect. The answer is not Orchestrating container deployments.**
+
+🤖 **System AI Analysis:**
+Let's clarify this piece of the architecture.
+
+Container orchestration is like the shipping department of a company—it makes sure software packages are delivered, scaled, and running smoothly on different servers. In AWS, this is handled by services like **Amazon ECS** or **Amazon EKS**. Amazon Macie does not manage infrastructure or containers; it is a security service that scans S3 buckets for sensitive data.""",
+
+            "Translating text": """❌ **Incorrect. The answer is not Translating text.**
+
+🤖 **System AI Analysis:**
+This is an easy one to separate! 
+
+Translating text from one language to another (like English to Spanish) is handled by the dedicated ML service called **Amazon Translate**. Amazon Macie has nothing to do with translation; it simply reads data in its native language to look for security risks and PII."""
         }
     }
 ]
@@ -97,10 +163,7 @@ if page == "1. ML & GenAI Fundamentals":
             st.session_state.selected_answer = choice
             
             # Show customized feedback
-            if choice == q["answer"]:
-                st.success(q["explanations"][choice])
-            else:
-                st.error(q["explanations"][choice])
+            st.markdown(q["explanations"][choice])
             
             # Show Next Button
             st.button("Next Question ➡️", on_click=next_question, type="primary")

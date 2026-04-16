@@ -1,7 +1,6 @@
 import streamlit as st
 import boto3
 import json
-import os
 from botocore.exceptions import ClientError
 
 # --- CONFIGURATION ---
@@ -12,28 +11,20 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- LOAD QUIZ DATA (BULLETPROOF PATHING) ---
-@st.cache_data
-def load_quiz_data():
-    # Force the app to look in the exact same directory as this app.py script
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(base_dir, "questions.json")
-    
-    if os.path.exists(file_path):
-        with open(file_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    else:
-        # If it fails, it will print exactly where it tried to look
-        return [{
-            "question": f"⚠️ Error: Could not find the file at: {file_path}",
-            "options": ["Acknowledge"],
-            "answer": "Acknowledge",
-            "explanations": {
-                "Acknowledge": "Go to GitHub and make sure 'questions.json' is saved in that exact folder location."
-            }
-        }]
+# --- LOAD QUIZ DATA ---
+# This looks specifically for your 'question.py' file!
+try:
+    from question import quiz_data 
+except ImportError:
+    quiz_data = [{
+        "question": "⚠️ Error: Could not find 'question.py'.",
+        "options": ["Acknowledge"],
+        "answer": "Acknowledge",
+        "explanations": {
+            "Acknowledge": "Please ensure your file is named exactly 'question.py' on GitHub and contains the 'quiz_data' list."
+        }
+    }]
 
-quiz_data = load_quiz_data()
 total_questions = len(quiz_data)
 
 # --- SESSION STATE INITIALIZATION ---

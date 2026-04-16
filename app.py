@@ -12,22 +12,24 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- LOAD QUIZ DATA ---
-# This safely loads your questions from the JSON file on GitHub
+# --- LOAD QUIZ DATA (BULLETPROOF PATHING) ---
 @st.cache_data
 def load_quiz_data():
-    file_path = "questions.json"
+    # Force the app to look in the exact same directory as this app.py script
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(base_dir, "questions.json")
+    
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
             return json.load(f)
     else:
-        # Fallback if the file hasn't been created yet
+        # If it fails, it will print exactly where it tried to look
         return [{
-            "question": "⚠️ Error: 'questions.json' file not found in your repository.",
+            "question": f"⚠️ Error: Could not find the file at: {file_path}",
             "options": ["Acknowledge"],
             "answer": "Acknowledge",
             "explanations": {
-                "Acknowledge": "Please create `questions.json` in your GitHub repository and paste your generated questions there."
+                "Acknowledge": "Go to GitHub and make sure 'questions.json' is saved in that exact folder location."
             }
         }]
 
